@@ -21,7 +21,7 @@ print('loading raw data')
 #         node = pd.concat(node, pd.DataFrame(chunk), axis=0)
 node = None
 
-ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', buf_size=int(3.0e6))
+ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', buf_size=int(5.0e5))
 #ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item')
 # for item in tqdm(ijson_data):
 #     print(item)
@@ -29,15 +29,23 @@ ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', 
 #         node = pd.DataFrame(columns=list(item.keys()))
 #     node.loc[len(node)] = item
 
+cnt = 0
 with tqdm() as pbar:
-    while batch := islice(ijson_data, int(1.5e5)):
+    while batch := islice(ijson_data, int(1.0e5)):
+        cnt += 1
+        if pd.DataFrame(batch).empty:
+            break
         if node is None:
-                node = pd.DataFrame(batch)
+                #node = pd.DataFrame(batch)
+                pass
         else:
-            node = pd.concat([node, pd.DataFrame(batch)], axis=0)
+            #node = pd.concat([node, pd.DataFrame(batch)], axis=0)
+            pass
         pbar.update(1)
 
 
+print(cnt)
+assert False
 edge = pd.read_csv("../datasets/Twibot-20/edge.csv")
 label = pd.read_csv("../datasets/Twibot-20/label.csv")
 split = pd.read_csv("../datasets/Twibot-20/split.csv")

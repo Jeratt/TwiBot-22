@@ -9,7 +9,10 @@ path='../datasets/Twibot-22/'
 
 user=pd.read_json(path+'user.json')
 print("KEK1")
-edge=pd.read_csv(path+'edge.csv')
+edge_gen = pd.read_csv(path+'edge.csv', chunksize=1e4)
+edge = None
+for batch in edge_gen:
+    edge = pd.concat([edge, pd.DataFrame(batch)])
 print("KEK2")
 user_idx=user['id']
 uid_index={uid:index for index,uid in enumerate(user_idx.values)}
