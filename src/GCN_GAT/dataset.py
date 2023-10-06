@@ -4,9 +4,15 @@ import torch
 import os.path as osp
 from torch_geometric.data import Data
 
+data_index = {
+    'cresci-2015': 'cresci_15',
+    'Twibot-22': 'twibot_22',
+    'Twibot-20': 'twibot_20'
+}
 
-def get_transfer_data():
-    path = '../../BotRGCN/twibot_22/processed_data'
+
+def get_transfer_data(dataset_name):
+    path = '../../BotRGCN/{}/processed_data'.format(data_index[dataset_name])
     labels = torch.load(osp.join(path, 'label.pt'))
     des_embedding = torch.load(osp.join(path, 'des_tensor.pt'))
     tweet_embedding = torch.load(osp.join(path, 'tweets_tensor.pt'))
@@ -22,15 +28,12 @@ def get_transfer_data():
                 num_nodes=labels.shape[0])
 
 
-data_index = {
-    'cresci-2015': 'cresci_15',
-    'Twibot-22': 'twibot_22',
-    'Twibot-20': 'twibot_20'
-}
 
 
 def get_train_data(dataset_name):
-    path = '../../BotRGCN/{}/processed_data'.format(data_index[dataset_name])
+    # path = '../../BotRGCN/{}/processed_data'.format(data_index[dataset_name])
+    path = '../BotRGCN/{}/processed_data'.format(data_index[dataset_name])
+    print(osp.abspath(path))
     if not osp.exists(path):
         raise KeyError
     labels = torch.load(osp.join(path, 'label.pt'))
@@ -62,3 +65,5 @@ def get_train_data(dataset_name):
                 num_nodes=des_embedding.shape[0])
 
 
+if __name__ == "__main__":
+    get_transfer_data("cresci-2015")

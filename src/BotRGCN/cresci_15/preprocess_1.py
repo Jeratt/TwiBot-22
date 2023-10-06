@@ -7,6 +7,7 @@ from dataset_tool import fast_merge,df_to_mask
 import os
 
 print('loading raw data')
+print(os.path.abspath("../datasets/cresci-2015/node.json"))
 node=pd.read_json("../datasets/cresci-2015/node.json")
 edge=pd.read_csv("../datasets/cresci-2015/edge.csv")
 label=pd.read_csv("../datasets/cresci-2015/label.csv")
@@ -210,5 +211,6 @@ edge['source_id']=list(map(lambda x:uid_to_user_index[x],edge['source_id'].value
 dict={i:[] for i in range(len(user))}
 for i in tqdm(range(len(edge))):
     dict[edge.iloc[i]['source_id']].append(edge.iloc[i]['target_id'])
+print(dict)
 
 np.save('processed_data/each_user_tweets.npy',dict)

@@ -8,6 +8,10 @@ from tqdm import tqdm
 import torch.nn as nn
 from model import BotGAT, BotGCN, BotRGCN
 
+# My Runtime
+torch.manual_seed(100)
+os.chdir("./src/GCN_GAT")
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 parser = ArgumentParser()
 parser.add_argument('--dataset', type=str)
@@ -112,16 +116,17 @@ def validation(epoch, name, model, loss_fn, loader):
 
 def train():
     print(data)
-    train_loader = NeighborLoader(data,
+    # BUGFIX - add .contiguous()
+    train_loader = NeighborLoader(data.contiguous(),
                                   num_neighbors=[256] * 4,
                                   batch_size=batch_size,
                                   input_nodes=data.train_idx,
                                   shuffle=True)
-    val_loader = NeighborLoader(data,
+    val_loader = NeighborLoader(data.contiguous(),
                                 num_neighbors=[256] * 4,
                                 batch_size=batch_size,
                                 input_nodes=data.val_idx)
-    test_loader = NeighborLoader(data,
+    test_loader = NeighborLoader(data.contiguous(),
                                  num_neighbors=[256] * 4,
                                  batch_size=batch_size,
                                  input_nodes=data.test_idx)
