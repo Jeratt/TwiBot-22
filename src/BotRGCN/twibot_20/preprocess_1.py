@@ -21,7 +21,10 @@ print('loading raw data')
 #         node = pd.concat(node, pd.DataFrame(chunk), axis=0)
 node = None
 
-ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', buf_size=int(5.0e5))
+ijson_data = ijson.items(open("twibot_test.json", 'rb'), 'item')
+
+#ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', buf_size=int(5.0e5))
+
 #ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item')
 # for item in tqdm(ijson_data):
 #     print(item)
@@ -44,10 +47,12 @@ with tqdm() as pbar:
         pbar.update(1)
 
 
-print(cnt)
-assert False
+#print(cnt)
+#assert False
 edge = pd.read_csv("../datasets/Twibot-20/edge.csv")
+print("ELE")
 label = pd.read_csv("../datasets/Twibot-20/label.csv")
+print('ASf')
 split = pd.read_csv("../datasets/Twibot-20/split.csv")
 print('processing raw data')
 user, tweet = fast_merge(dataset='Twibot-20')

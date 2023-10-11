@@ -3,17 +3,35 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from datetime import datetime as dt
+from itertools import islice
 import json
+import ijson
 print('loading raw data')
 path='../datasets/Twibot-22/'
 
-user=pd.read_json(path+'user.json')
-print("KEK1")
-edge_gen = pd.read_csv(path+'edge.csv', chunksize=1e4)
+ijson_data = ijson.items(open(path+'user.json', 'rb'), 'item')
+user = None
+while batch := islice(ijson_data, int(5.0e3)):
+    df = pd.DataFrame(batch)
+    if df.empty:
+        break
+    user = pd.concat([user, df], axis=0)
+# user=pd.read_json(path+'user.json')
+print("USER.JSON PARSED")
+
+
+edge_gen = pd.read_csv(path+'edge.csv', chunksize=5e5)
 edge = None
-for batch in edge_gen:
-    edge = pd.concat([edge, pd.DataFrame(batch)])
-print("KEK2")
+with tqdm() as pbar:
+    for batch in edge_gen:
+        df = pd.DataFrame(batch)
+        edge = pd.concat([edge, pd.DataFrame(batch)])
+        if df.empty:
+            break
+        pbar.update(1)
+print("EDGE.CSV PARSED")
+
+
 user_idx=user['id']
 uid_index={uid:index for index,uid in enumerate(user_idx.values)}
 user_index_to_uid = list(user.id)
