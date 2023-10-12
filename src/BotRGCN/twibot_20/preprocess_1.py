@@ -21,9 +21,9 @@ print('loading raw data')
 #         node = pd.concat(node, pd.DataFrame(chunk), axis=0)
 node = None
 
-ijson_data = ijson.items(open("twibot_test.json", 'rb'), 'item')
+#ijson_data = ijson.items(open("twibot_test.json", 'rb'), 'item')
 
-#ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item', buf_size=int(5.0e5))
+ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item')#, buf_size=int(5.0e5))
 
 #ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item')
 # for item in tqdm(ijson_data):
@@ -38,9 +38,9 @@ with tqdm() as pbar:
         if df.empty:
             break
         if node is None:
-                node = pd.DataFrame(batch)
+                node = df
         else:
-            node = pd.concat([node, pd.DataFrame(batch)], axis=0)
+            node = pd.concat([node, df], axis=0)
         pbar.update(1)
 
 
