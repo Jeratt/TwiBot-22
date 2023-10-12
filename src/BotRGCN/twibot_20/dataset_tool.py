@@ -37,12 +37,12 @@ def split_user_and_tweet(df):
     return df[df.id.str.contains("^u")], df[df.id.str.contains("^t")]
     
 
-def fast_merge(dataset="Twibot-20", server_id="209"):
+def fast_merge(dataset="Twibot-20", server_id="209", node_info=None, label=None, split=None):
     assert dataset in dataset_names, f"Invalid dataset {dataset}"
     dataset_dir = get_data_dir(server_id) / dataset
-    node_info = pd.read_json(dataset_dir / "node.json")
-    label = pd.read_csv(dataset_dir / "label.csv")
-    split = pd.read_csv(dataset_dir / "split.csv")
+    # node_info = pd.read_json(dataset_dir / "node.json")
+    # label = pd.read_csv(dataset_dir / "label.csv")
+    # split = pd.read_csv(dataset_dir / "split.csv")
     
     user, tweet = split_user_and_tweet(node_info)
     

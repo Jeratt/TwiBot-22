@@ -6,6 +6,7 @@ from datetime import datetime as dt
 from itertools import islice
 import json
 import ijson
+import gc
 print('loading raw data')
 path='../datasets/Twibot-22/'
 
@@ -19,17 +20,16 @@ while batch := islice(ijson_data, int(5.0e3)):
 # user=pd.read_json(path+'user.json')
 print("USER.JSON PARSED")
 
-
-edge_gen = pd.read_csv(path+'edge.csv', chunksize=5e5)
-edge = None
-with tqdm() as pbar:
-    for batch in edge_gen:
-        df = pd.DataFrame(batch)
-        edge = pd.concat([edge, pd.DataFrame(batch)])
-        if df.empty:
-            break
-        pbar.update(1)
-print("EDGE.CSV PARSED")
+# edge_gen = pd.read_csv(path+'edge.csv', chunksize=5e5)
+# edge = None
+# with tqdm() as pbar:
+#     for batch in edge_gen:
+#         df = pd.DataFrame(batch)
+#         edge = pd.concat([edge, pd.DataFrame(batch)])
+#         if df.empty:
+#             break
+#         pbar.update(1)
+# print("EDGE.CSV PARSED")
 
 
 user_idx=user['id']
@@ -64,32 +64,32 @@ labels=torch.LongTensor(label_new)
 train_mask = torch.LongTensor(train_idx)
 valid_mask = torch.LongTensor(val_idx)
 test_mask = torch.LongTensor(test_idx)
-torch.save(train_mask,"./processed_data/train_idx.pt")
-torch.save(valid_mask,"./processed_data/val_idx.pt")
-torch.save(test_mask,"./processed_data/test_idx.pt")
-torch.save(labels,'./processed_data/label.pt')
+# torch.save(train_mask,"./processed_data/train_idx.pt")
+# torch.save(valid_mask,"./processed_data/val_idx.pt")
+# torch.save(test_mask,"./processed_data/test_idx.pt")
+# torch.save(labels,'./processed_data/label.pt')
 
-print('extracting edge_index&edge_type')
-edge_index=[]
-edge_type=[]
-for i in tqdm(range(len(edge))):
-    sid=edge['source_id'][i]
-    tid=edge['target_id'][i]
-    if edge['relation'][i]=='followers':
-        try:
-            edge_index.append([uid_index[sid],uid_index[tid]])
-            edge_type.append(0)
-        except KeyError:
-            continue
-    elif edge['relation'][i]=='following':
-        try:
-            edge_index.append([uid_index[sid],uid_index[tid]])
-            edge_type.append(1)
-        except KeyError:
-            continue
-        
-torch.save(torch.LongTensor(edge_index).t(),"./processed_data/edge_index.pt")
-torch.save(torch.LongTensor(edge_type),"./processed_data/edge_type.pt")
+# print('extracting edge_index&edge_type')
+# edge_index=[]
+# edge_type=[]
+# for i in tqdm(range(len(edge))):
+#     sid=edge['source_id'][i]
+#     tid=edge['target_id'][i]
+#     if edge['relation'][i]=='followers':
+#         try:
+#             edge_index.append([uid_index[sid],uid_index[tid]])
+#             edge_type.append(0)
+#         except KeyError:
+#             continue
+#     elif edge['relation'][i]=='following':
+#         try:
+#             edge_index.append([uid_index[sid],uid_index[tid]])
+#             edge_type.append(1)
+#         except KeyError:
+#             continue
+#
+# torch.save(torch.LongTensor(edge_index).t(),"./processed_data/edge_index.pt")
+# torch.save(torch.LongTensor(edge_type),"./processed_data/edge_type.pt")
 
 print('extracting num_properties')
 following_count=[]
@@ -131,7 +131,8 @@ for each in user['username']:
         num_username.append(int(0))
         
 created_at=user['created_at']
-created_at=pd.to_datetime(created_at,unit='s')
+# Fix - unit='s' don't need
+created_at=pd.to_datetime(created_at)
 
 followers_count=pd.DataFrame(followers_count)
 followers_count=(followers_count-followers_count.mean())/followers_count.std()
@@ -219,17 +220,17 @@ torch.save(num_properties_tensor,'./processed_data/num_properties_tensor.pt')
 
 torch.save(cat_properties_tensor,'./processed_data/cat_properties_tensor.pt')
 
-print("extracting each_user's tweets")
-id_tweet={i:[] for i in range(len(user_idx))}
-for i in range(9):
-    name='tweet_'+str(i)+'.json'
-    user_tweets=json.load(open("../../datasets/Twibot-22/"+name,'r'))
-    for each in user_tweets:
-        uid='u'+str(each['author_id'])
-        text=each['text']
-        try:
-            index=uid_index[uid]
-            id_tweet[index].append(text)
-        except KeyError:
-            continue
-json.dump(id_tweet,open('./processed_data/id_tweet.json','w'))
+# print("extracting each_user's tweets")
+# id_tweet={i:[] for i in range(len(user_idx))}
+# for i in range(9):
+#     name='tweet_'+str(i)+'.json'
+#     user_tweets=json.load(open("../../datasets/Twibot-22/"+name,'r'))
+#     for each in user_tweets:
+#         uid='u'+str(each['author_id'])
+#         text=each['text']
+#         try:
+#             index=uid_index[uid]
+#             id_tweet[index].append(text)
+#         except KeyError:
+#             continue
+# json.dump(id_tweet,open('./processed_data/id_tweet.json','w'))

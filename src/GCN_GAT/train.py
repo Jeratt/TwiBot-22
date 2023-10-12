@@ -9,7 +9,7 @@ import torch.nn as nn
 from model import BotGAT, BotGCN, BotRGCN
 
 # My Runtime
-torch.manual_seed(100)
+torch.manual_seed(500)
 os.chdir("./src/GCN_GAT")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

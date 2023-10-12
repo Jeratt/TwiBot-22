@@ -32,30 +32,25 @@ ijson_data = ijson.items(open("twibot_test.json", 'rb'), 'item')
 #         node = pd.DataFrame(columns=list(item.keys()))
 #     node.loc[len(node)] = item
 
-cnt = 0
 with tqdm() as pbar:
     while batch := islice(ijson_data, int(1.0e5)):
-        cnt += 1
-        if pd.DataFrame(batch).empty:
+        df = pd.DataFrame(batch)
+        if df.empty:
             break
         if node is None:
-                #node = pd.DataFrame(batch)
-                pass
+                node = pd.DataFrame(batch)
         else:
-            #node = pd.concat([node, pd.DataFrame(batch)], axis=0)
-            pass
+            node = pd.concat([node, pd.DataFrame(batch)], axis=0)
         pbar.update(1)
 
 
-#print(cnt)
-#assert False
 edge = pd.read_csv("../datasets/Twibot-20/edge.csv")
 print("ELE")
 label = pd.read_csv("../datasets/Twibot-20/label.csv")
 print('ASf')
 split = pd.read_csv("../datasets/Twibot-20/split.csv")
 print('processing raw data')
-user, tweet = fast_merge(dataset='Twibot-20')
+user, tweet = fast_merge(dataset='Twibot-20', node_info=node, label=label, split=split)
 path = 'processed_data/'
 
 if not os.path.exists("processed_data"):
@@ -157,7 +152,8 @@ for each in user['username']:
         screen_name_length.append(int(0))
 
 created_at = user['created_at']
-created_at = pd.to_datetime(created_at, unit='s')
+# Fix - check TwiBot-22
+created_at = pd.to_datetime(created_at)
 
 df_followers_count = pd.DataFrame(followers_count)
 followers_count = (df_followers_count - df_followers_count.mean()) / df_followers_count.std()
