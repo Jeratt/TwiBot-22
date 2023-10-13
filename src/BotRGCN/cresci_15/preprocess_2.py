@@ -12,10 +12,12 @@ tweet_text = [text for text in tweet.text]
 # each_user_tweets=torch.load('./processed_data/each_user_tweets.npy')
 numpy_tweets = np.load('./processed_data/each_user_tweets.npy', allow_pickle=True)
 print(numpy_tweets)
-each_user_tweets=torch.from_numpy(numpy_tweets)
+
+# each_user_tweets=torch.from_numpy(numpy_tweets)
+each_user_tweets = numpy_tweets.tolist()
 
 
-feature_extract=pipeline('feature-extraction',model='roberta-base',tokenizer='roberta-base',device=3,padding=True, truncation=True,max_length=50, add_special_tokens = True)
+feature_extract=pipeline('feature-extraction',model='roberta-base',tokenizer='roberta-base',device='cpu',padding=True, truncation=True,max_length=50, add_special_tokens = True)
 
 def Des_embbeding():
         print('Running feature1 embedding')
@@ -83,5 +85,5 @@ def tweets_embedding():
             tweets_tensor=torch.load(path)
         print('Finished')
 
-Des_embbeding()
+# Des_embbeding()
 tweets_embedding()
