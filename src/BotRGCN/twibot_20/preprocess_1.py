@@ -32,6 +32,7 @@ ijson_data = ijson.items(open("../datasets/Twibot-20/node.json", 'rb'), 'item')#
 #         node = pd.DataFrame(columns=list(item.keys()))
 #     node.loc[len(node)] = item
 
+cnt = 0
 with tqdm() as pbar:
     while batch := islice(ijson_data, int(1.0e5)):
         df = pd.DataFrame(batch)
@@ -40,8 +41,11 @@ with tqdm() as pbar:
         if node is None:
                 node = df
         else:
-            node = pd.concat([node, df], axis=0)
+            node = pd.concat([node, df], axis=0, ignore_index=True)
         pbar.update(1)
+        # cnt += 1
+        # if cnt > 10:
+        #     break
 
 
 edge = pd.read_csv("../datasets/Twibot-20/edge.csv")
@@ -190,7 +194,7 @@ print('extracting cat_properties')
 default_profile_image = []
 for each in user['profile_image_url']:
     if each is not None:
-        if each == 'http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png ':
+        if each == 'http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png':
             default_profile_image.append(int(1))
         else:
             default_profile_image.append(int(0))
@@ -215,7 +219,8 @@ for each in verified:
     else:
         verified_list.append(0)
 
-cat_properties_tensor = default_profile_image_tensor.reshape([5301, 1])
+# Fix 5301 -> 229580 -> for each user. Don't know if it right
+cat_properties_tensor = default_profile_image_tensor.reshape([229580, 1])
 torch.save(cat_properties_tensor, path + 'cat_properties_tensor.pt')
 
 # get each_user_tweets
